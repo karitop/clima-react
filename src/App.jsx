@@ -1,9 +1,9 @@
 import './App.css'
-import { useState, useEffect } from "react";
+import { useState, useMemo } from "react";
 import { useFetch } from './hooks/useFetch';
 import { describirClima } from "./clima"
 
-/*
+/* Código og del paso 1
 export default function App(){
   const [texto, setTexto] = useState("");
   const [ciudades, setCiudades] = useState([]);
@@ -88,6 +88,23 @@ export default function App(){
 
   const pronostico = useFetch(url2);
 
+  const resumen = useMemo(() => {
+    if(pronostico.datos === null)
+      return
+
+    const maximo = Math.max(...pronostico.datos.daily.temperature_2m_max);
+    const minimo = Math.min(...pronostico.datos.daily.temperature_2m_min);
+    const i = pronostico.datos.daily.temperature_2m_max.indexOf(maximo);
+    const diaMasCaluroso = pronostico.datos.daily.time[i];
+
+    console.log("calculando resumen")
+    return {
+      maximo: maximo,
+      minimo: minimo,
+      diaMasCaluroso: diaMasCaluroso
+    };
+  }, [pronostico.datos]);
+
   return(
     <div>
       <h1>Clima</h1>
@@ -117,6 +134,7 @@ export default function App(){
          <div>
           <h2>{ciudad.name}</h2>
           <h3>{pronostico.datos.current.temperature_2m}°C . {describirClima(pronostico.datos.current.weather_code)} . {pronostico.datos.current.wind_speed_10m}km/h</h3>
+          <h4>Esta semana: La temperatura máxima fue de {resumen.maximo}. La temperatura mínima fue de {resumen.minimo}. El día más caluroso fue el {resumen.diaMasCaluroso}</h4>
           <ul>
             {pronostico.datos.daily.time.map((fecha, i) => (
               <li key={fecha}>
