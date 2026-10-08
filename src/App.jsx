@@ -1,6 +1,7 @@
 import './App.css'
 import { useState, useEffect } from "react";
 import { useFetch } from './hooks/useFetch';
+import { describirClima } from "./clima"
 
 /*
 export default function App(){
@@ -70,17 +71,22 @@ export default function App(){
 }
 */
 
-
 export default function App(){
   const [texto, setTexto] = useState("");
+  const [ciudad, setCiudad] = useState(null);
 
-  const url = texto.length >= 3 
+  const url1 = texto.length >= 3 
   ? `https://geocoding-api.open-meteo.com/v1/search?name=${encodeURIComponent(texto)}&count=5&language=es`
   : null;
 
-  const ciudades = useFetch(url);
+  const ciudades = useFetch(url1);
   const lista = ciudades.datos?.results ?? [];
 
+  const url2 = ciudad !== null 
+  ? `https://api.open-meteo.com/v1/forecast?latitude=${ciudad.latitude}&longitude=${ciudad.longitude}&current=temperature_2m,weather_code,wind_speed_10m&daily=temperature_2m_max,temperature_2m_min,weather_code&timezone=auto`
+  : null;
+
+  const pronostico = useFetch(url2);
 
   return(
     <div>
@@ -99,11 +105,27 @@ export default function App(){
 
       <ul>
         {lista.map((c) => (
-          <li key={c.id}>
+          <li key={c.id} onClick={() => setCiudad(c)}>
             {c.name}, {c.admin1}, {c.country}
           </li>
         ))}
       </ul>
+
+      {pronostico.cargando && <p>Cargando...</p>}
+      {pronostico.error && <p>Error de pronóstico: {pronostico.error} </p>}
+      {pronostico.datos && !pronostico.cargando && !pronostico.error && ciudad && (
+         <div>
+          <h2>{ciudad.name}</h2>
+          <h3>{pronostico.datos.current.temperature_2m}°C . {describirClima(pronostico.datos.current.weather_code)} . {pronostico.datos.current.wind_speed_10m}km/h</h3>
+          <ul>
+            {pronostico.datos.daily.time.map((fecha, i) => (
+              <li key={fecha}>
+                {fecha} . {pronostico.datos.daily.temperature_2m_max[i]}°C . {pronostico.datos.daily.temperature_2m_min[i]}°C . {describirClima(pronostico.datos.daily.weather_code[i])}
+              </li>
+            ))}
+          </ul>
+      </div>
+      )}
     </div>
   );
 
