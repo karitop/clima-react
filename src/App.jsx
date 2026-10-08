@@ -1,5 +1,5 @@
 import './App.css'
-import { useState, useMemo } from "react";
+import { useState, useMemo, useRef, useEffect } from "react";
 import { useFetch } from './hooks/useFetch';
 import { describirClima } from "./clima"
 
@@ -105,14 +105,27 @@ export default function App(){
     };
   }, [pronostico.datos]);
 
+  const entrada = useRef(null);
+  useEffect(() => {
+    entrada.current.focus();
+  }, []);
+
+  const limpiar = () => {
+    setTexto("");
+    setCiudad(null);
+    entrada.current.focus();
+  }
+
   return(
     <div>
       <h1>Clima</h1>
       <input 
+        ref={entrada}
         value={texto} 
         onChange={(e) => setTexto(e.target.value)}
         placeholder="Escribe una ciudad"
       />
+      <button onClick={limpiar} >Limpiar</button>
 
       {ciudades.cargando && <p>Buscando...</p>}
       {ciudades.error && <p>Error: {ciudades.error} </p>}
