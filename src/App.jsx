@@ -2,6 +2,7 @@ import './App.css'
 import { useState, useMemo, useRef, useEffect } from "react";
 import { useFetch } from './hooks/useFetch';
 import { describirClima } from "./clima"
+import useDebounce from './hooks/useDebounce';
 
 /* Código og del paso 1
 export default function App(){
@@ -75,9 +76,13 @@ export default function App(){
   const [texto, setTexto] = useState("");
   const [ciudad, setCiudad] = useState(null);
 
-  const url1 = texto.length >= 3 
-  ? `https://geocoding-api.open-meteo.com/v1/search?name=${encodeURIComponent(texto)}&count=5&language=es`
-  : null;
+  // const url1 = texto.length >= 3 
+  // ? `https://geocoding-api.open-meteo.com/v1/search?name=${encodeURIComponent(texto)}&count=5&language=es`
+  // : null;
+  const textoRetrasado = useDebounce(texto, 400);
+  const url1 = textoRetrasado.length >= 3
+    ? `https://geocoding-api.open-meteo.com/v1/search?name=${encodeURIComponent(textoRetrasado)}&count=5&language=es`
+    : null;
 
   const ciudades = useFetch(url1);
   const lista = ciudades.datos?.results ?? [];
