@@ -1,7 +1,8 @@
 import './App.css'
 import { useState, useEffect } from "react";
+import { useFetch } from './hooks/useFetch';
 
-
+/*
 export default function App(){
   const [texto, setTexto] = useState("");
   const [ciudades, setCiudades] = useState([]);
@@ -58,6 +59,46 @@ export default function App(){
 
       <ul>
         {ciudades.map((c) => (
+          <li key={c.id}>
+            {c.name}, {c.admin1}, {c.country}
+          </li>
+        ))}
+      </ul>
+    </div>
+  );
+
+}
+*/
+
+
+export default function App(){
+  const [texto, setTexto] = useState("");
+
+  const url = texto.length >= 3 
+  ? `https://geocoding-api.open-meteo.com/v1/search?name=${encodeURIComponent(texto)}&count=5&language=es`
+  : null;
+
+  const ciudades = useFetch(url);
+  const lista = ciudades.datos?.results ?? [];
+
+
+  return(
+    <div>
+      <h1>Clima</h1>
+      <input 
+        value={texto} 
+        onChange={(e) => setTexto(e.target.value)}
+        placeholder="Escribe una ciudad"
+      />
+
+      {ciudades.cargando && <p>Buscando...</p>}
+      {ciudades.error && <p>Error: {ciudades.error} </p>}
+      {ciudades.datos && !ciudades.cargando && !ciudades.error && lista.length ===0 && (
+        <p>Sin resultados</p>
+      )}
+
+      <ul>
+        {lista.map((c) => (
           <li key={c.id}>
             {c.name}, {c.admin1}, {c.country}
           </li>
