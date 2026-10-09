@@ -122,44 +122,80 @@ export default function App(){
   }
 
   return(
-    <div>
-      <h1>Clima</h1>
-      <input 
-        ref={entrada}
-        value={texto} 
-        onChange={(e) => setTexto(e.target.value)}
-        placeholder="Escribe una ciudad"
-      />
-      <button onClick={limpiar} >Limpiar</button>
+    <div  className="max-full p-5 bg-white space-y-4 text-sm text-slate-800">
+      <h1 className="text-left text-xl font-bold">Clima</h1>
+      <div className="flex gap-2">
+        <input 
+          ref={entrada}
+          className="flex-1 border border-slate-300 rounded p-2 focus:outline-none focus:ring-2 focus:ring-red-300"
+          value={texto} 
+          onChange={(e) => setTexto(e.target.value)}
+          placeholder="Escribe una ciudad"
+        />
+        <button
+          onClick={limpiar} 
+          className="px-3 py-1 rounded border border-slate-300 hover:bg-slate-50"
+        >Limpiar
+        </button>
+      </div>
 
-      {ciudades.cargando && <p>Buscando...</p>}
-      {ciudades.error && <p>Error: {ciudades.error} </p>}
+      {ciudades.cargando && <p className="text-slate-500">Buscando...</p>}
+      {ciudades.error && <p className="text-red-700">Error: {ciudades.error} </p>}
       {ciudades.datos && !ciudades.cargando && !ciudades.error && lista.length ===0 && (
-        <p>Sin resultados</p>
+        <p className="text-slate-500">Sin resultados</p>
       )}
 
-      <ul>
+      <ul className="space-y-1">
         {lista.map((c) => (
-          <li key={c.id} onClick={() => setCiudad(c)}>
+          <li key={c.id} 
+              onClick={() => setCiudad(c)}
+              className={
+              "px-2 py-1 rounded cursor-pointer hover:bg-slate-50 " +
+              (ciudad?.id === c.id ? "bg-slate-100 font-bold" : "")}
+          >
             {c.name}, {c.admin1}, {c.country}
           </li>
         ))}
       </ul>
 
-      {pronostico.cargando && <p>Cargando...</p>}
-      {pronostico.error && <p>Error de pronóstico: {pronostico.error} </p>}
+      {pronostico.cargando && <p  className="text-slate-500">Cargando...</p>}
+      {pronostico.error && (
+        <p className="text-red-700">Error de pronóstico: {pronostico.error} </p>
+      )}
+
       {pronostico.datos && !pronostico.cargando && !pronostico.error && ciudad && (
-         <div>
-          <h2>{ciudad.name}</h2>
-          <h3>{pronostico.datos.current.temperature_2m}°C . {describirClima(pronostico.datos.current.weather_code)} . {pronostico.datos.current.wind_speed_10m}km/h</h3>
-          <h4>Esta semana: La temperatura máxima fue de {resumen.maximo}. La temperatura mínima fue de {resumen.minimo}. El día más caluroso fue el {resumen.diaMasCaluroso}</h4>
-          <ul>
+        
+      <div className="border border-slate-200 rounded p-6 space-y-5">
+          <p className="text-lg font-bold">{ciudad.name}</p>
+         
+          <p>
+            <span className="text-3xl font-bold">
+              {pronostico.datos.current.temperature_2m}°C 
+            </span>{" "}
+            . {describirClima(pronostico.datos.current.weather_code)} 
+            . viento{" "} {pronostico.datos.current.wind_speed_10m} km/h
+          </p>
+
+          <p className="bg-amber-50 rounded p-2">
+            Esta semana: La temperatura máxima fue de {resumen.maximo}°C. La temperatura mínima fue de {resumen.minimo}°C. 
+            El día más caluroso fue el {resumen.diaMasCaluroso}
+          </p>
+          
+         
+          <div  className="grid grid-cols-7 gap-1 text-center text-xs">
             {pronostico.datos.daily.time.map((fecha, i) => (
-              <li key={fecha}>
-                {fecha} . {pronostico.datos.daily.temperature_2m_max[i]}°C . {pronostico.datos.daily.temperature_2m_min[i]}°C . {describirClima(pronostico.datos.daily.weather_code[i])}
-              </li>
+
+              <div key={fecha} className="border border-slate-200 rounded p-1">
+                {fecha.slice(5)}
+                <br />
+                {describirClima(pronostico.datos.daily.weather_code[i]).split(" ")[0]}
+                <br />
+                {Math.round(pronostico.datos.daily.temperature_2m_min[i])}–
+                {Math.round(pronostico.datos.daily.temperature_2m_max[i])}
+              </div>
+
             ))}
-          </ul>
+          </div>
       </div>
       )}
     </div>
