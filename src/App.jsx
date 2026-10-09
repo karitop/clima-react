@@ -122,25 +122,25 @@ export default function App(){
   }
 
   return(
-    <div  className="max-full p-5 bg-white space-y-4 text-sm text-slate-800">
+    <div  className="p-5 space-y-4 text-sm">
       <h1 className="text-left text-xl font-bold">Clima</h1>
       <div className="flex gap-2">
         <input 
           ref={entrada}
-          className="flex-1 border border-slate-300 rounded p-2 focus:outline-none focus:ring-2 focus:ring-red-300"
+          className="flex-1 border border-slate-300 dark:border-slate-600 rounded p-2 focus:outline-none focus:ring-2 focus:ring-red-300"
           value={texto} 
           onChange={(e) => setTexto(e.target.value)}
           placeholder="Escribe una ciudad"
         />
         <button
           onClick={limpiar} 
-          className="px-3 py-1 rounded border border-slate-300 hover:bg-slate-50"
+          className="px-3 py-1 rounded border border-slate-300 dark:border-slate-600 hover:bg-slate-50 dark:hover:bg-slate-800"
         >Limpiar
         </button>
       </div>
 
       {ciudades.cargando && <p className="text-slate-500">Buscando...</p>}
-      {ciudades.error && <p className="text-red-700">Error: {ciudades.error} </p>}
+      {ciudades.error && <p className="text-red-700 dark:text-red-400">Error: {ciudades.error} </p>}
       {ciudades.datos && !ciudades.cargando && !ciudades.error && lista.length ===0 && (
         <p className="text-slate-500">Sin resultados</p>
       )}
@@ -150,8 +150,8 @@ export default function App(){
           <li key={c.id} 
               onClick={() => setCiudad(c)}
               className={
-              "px-2 py-1 rounded cursor-pointer hover:bg-slate-50 " +
-              (ciudad?.id === c.id ? "bg-slate-100 font-bold" : "")}
+              "px-2 py-1 rounded cursor-pointer hover:bg-slate-50 dark:hover:bg-slate-800" +
+              (ciudad?.id === c.id ? "bg-slate-100 dark:bg-slate-700 font-bold" : "")}
           >
             {c.name}, {c.admin1}, {c.country}
           </li>
@@ -160,12 +160,12 @@ export default function App(){
 
       {pronostico.cargando && <p  className="text-slate-500">Cargando...</p>}
       {pronostico.error && (
-        <p className="text-red-700">Error de pronóstico: {pronostico.error} </p>
+        <p className="text-red-700 dark:text-red-400">Error de pronóstico: {pronostico.error} </p>
       )}
 
       {pronostico.datos && !pronostico.cargando && !pronostico.error && ciudad && (
         
-      <div className="border border-slate-200 rounded p-6 space-y-5">
+      <div className="border border-slate-200 dark:border-slate-700 rounded p-6 space-y-5">
           <p className="text-lg font-bold">{ciudad.name}</p>
          
           <p>
@@ -176,7 +176,7 @@ export default function App(){
             . viento{" "} {pronostico.datos.current.wind_speed_10m} km/h
           </p>
 
-          <p className="bg-amber-50 rounded p-2">
+          <p className="bg-amber-50 dark:bg-amber-900/30 rounded p-2">
             Esta semana: La temperatura máxima fue de {resumen.maximo}°C. La temperatura mínima fue de {resumen.minimo}°C. 
             El día más caluroso fue el {resumen.diaMasCaluroso}
           </p>
@@ -185,7 +185,7 @@ export default function App(){
           <div  className="grid grid-cols-7 gap-1 text-center text-xs">
             {pronostico.datos.daily.time.map((fecha, i) => (
 
-              <div key={fecha} className="border border-slate-200 rounded p-1">
+              <div key={fecha} className="border border-slate-200 dark:border-slate-700 rounded p-1">
                 {fecha.slice(5)}
                 <br />
                 {describirClima(pronostico.datos.daily.weather_code[i]).split(" ")[0]}
